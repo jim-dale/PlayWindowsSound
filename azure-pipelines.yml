@@ -18,7 +18,7 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(Build.SourcesDirectory)\\$(buildPlatform)\\$(buildConfiguration)'
+    SourceFolder: '$(Build.SourcesDirectory)\\bin\\$(buildPlatform)\\$(buildConfiguration)'
     Contents: '*.exe'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
