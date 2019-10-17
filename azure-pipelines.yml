@@ -30,8 +30,6 @@ jobs:
         Contents: '*.exe'
         TargetFolder: '$(Build.ArtifactStagingDirectory)\\$(buildPlatform)'
 
-- job: Publish
-  steps:
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
