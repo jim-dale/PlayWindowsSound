@@ -6,24 +6,34 @@ pool:
 
 variables:
   solution: '**/*.sln'
-  buildPlatform: 'x64'
   buildConfiguration: 'Release'
 
-steps:
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+jobs:
+- job: Build
+  strategy:
+    matrix:
+      x86:
+        buildPlatform: 'x86'
+      x64:
+        buildPlatform: 'x64'
 
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)\\bin\\$(buildPlatform)\\$(buildConfiguration)'
-    Contents: '*.exe'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  steps:
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'PlayWindowsSound-$(buildPlatform)'
-    publishLocation: 'Container'
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)\\bin\\$(buildPlatform)\\$(buildConfiguration)'
+        Contents: '*.exe'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)\\$(buildPlatform)'
+
+- job: Publish
+  steps:
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'PlayWindowsSound-$(buildPlatform)'
+        publishLocation: 'Container'
