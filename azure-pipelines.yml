@@ -1,0 +1,37 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildConfiguration: 'Release'
+
+jobs:
+- job: Build
+  strategy:
+    matrix:
+      x86:
+        buildPlatform: 'x86'
+      x64:
+        buildPlatform: 'x64'
+
+  steps:
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)\\bin\\$(buildPlatform)\\$(buildConfiguration)'
+        Contents: '*.exe'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)\\$(buildPlatform)'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'PlayWindowsSound-$(buildPlatform)'
+        publishLocation: 'Container'
